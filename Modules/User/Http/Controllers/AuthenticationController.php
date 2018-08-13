@@ -51,4 +51,15 @@ class AuthenticationController extends Controller
         // the token is valid and we have found the user via the sub claim
         return response()->json(compact('user'));
     }
+
+    public function logout(Request $request) {
+        $token = JWTAuth::getToken();
+        try {
+            JWTAuth::invalidate($token);
+            return response()->json(['success' => true, 'message'=> "You have successfully logged out."]);
+        } catch (JWTException $e) {
+            // something went wrong whilst attempting to encode the token
+            return response()->json(['success' => false, 'error' => 'Failed to logout, please try again.'], 500);
+        }
+    }
 }
