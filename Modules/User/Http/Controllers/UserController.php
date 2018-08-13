@@ -13,9 +13,9 @@ class UserController extends Controller
      * Display a listing of the resource.
      * @return Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        return response()->json(User::paginate());
+        return response()->json(User::paginate($request->per_page));
     }
 
     /**
