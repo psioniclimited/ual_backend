@@ -2,6 +2,7 @@
 
 namespace Modules\User\Http\Controllers;
 
+use App\Filters\UserFilter;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Routing\Controller;
@@ -13,9 +14,10 @@ class UserController extends Controller
      * Display a listing of the resource.
      * @return Response
      */
-    public function index(Request $request)
+    public function index(Request $request, UserFilter $filters)
     {
-        return response()->json(User::paginate($request->per_page));
+        $users = new User();
+        return response()->json($users->filter($filters)->paginate($request->per_page));
     }
 
     /**
