@@ -1,5 +1,7 @@
 <?php
+
 namespace App\Filters;
+
 use Modules\User\Entities\User;
 
 class UserFilter extends Filters
@@ -9,7 +11,7 @@ class UserFilter extends Filters
      *
      * @var array
      */
-    protected $filters = ['name', 'sort_by'];
+    protected $filters = ['name', 'sort_by', 'global'];
 
     /**
      * Filter the query by a given username.
@@ -23,9 +25,17 @@ class UserFilter extends Filters
         return $this->builder->where('id', $user->id);
     }
 
-    protected function sort_by($sort_by){
+    protected function sort_by($sort_by)
+    {
         $sort_by = explode('.', $sort_by);
         $sort_by[1] == 1 ? $sort_by[1] = 'asc' : $sort_by[1] = 'desc';
         return $this->builder->orderBy($sort_by[0], $sort_by[1]);
+    }
+
+    protected function global($global)
+    {
+        return $this->builder
+            ->where('name', 'like', '%' . $global . '%')
+            ->orWhere('email', 'like', '%' . $global . '%');
     }
 }
