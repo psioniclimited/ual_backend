@@ -4,9 +4,12 @@ namespace Modules\User\Entities;
 
 use App\Filters\UserFilter;
 use Illuminate\Database\Eloquent\Model;
+use Zizaco\Entrust\Traits\EntrustUserTrait;
+use Illuminate\Foundation\Auth\User as Authenticatable;
 
-class User extends Model
+class User extends Authenticatable
 {
+    use EntrustUserTrait;
     protected $fillable = [];
     /**
      * Apply all relevant thread filters.
