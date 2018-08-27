@@ -7,6 +7,8 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Routing\Controller;
 use Modules\User\Entities\User;
+use Modules\User\Http\Requests\CreateUserRequest;
+use JWTAuth;
 
 class UserController extends Controller
 {
@@ -34,8 +36,16 @@ class UserController extends Controller
      * @param  Request $request
      * @return Response
      */
-    public function store(Request $request)
+    public function store(CreateUserRequest $request)
     {
+        $authenticated_user = JWTAuth::parseToken()->authenticate();
+        $user = new User;
+        $user->name = $request->name;
+        $user->email = $request->email;
+        $user->password = bcrypt($request->password);
+        $user->company_id = $authenticated_user->company_id;
+        $user->save();
+        //TODO add role to user
     }
 
     /**

@@ -10,7 +10,6 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 class User extends Authenticatable
 {
     use EntrustUserTrait;
-    protected $fillable = [];
     /**
      * Apply all relevant thread filters.
      *
