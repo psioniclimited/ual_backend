@@ -45,7 +45,10 @@ class PermissionController extends Controller
      */
     public function show(Request $request)
     {
-        dd("in the backend");
+        $id = $request->id;
+        $permission_data = Permission::find($id)->get();
+//        dd($permission_data[0]['name']);
+        return response()->json($permission_data);
     }
 
     /**
