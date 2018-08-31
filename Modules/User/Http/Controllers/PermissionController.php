@@ -43,9 +43,9 @@ class PermissionController extends Controller
      * Show the specified resource.
      * @return Response
      */
-    public function show()
+    public function show(Request $request)
     {
-        return view('user::show');
+        dd("in the backend");
     }
 
     /**

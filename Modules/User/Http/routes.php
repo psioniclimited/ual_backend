@@ -9,6 +9,7 @@ Route::group(['middleware' => 'api', 'prefix' => 'user', 'namespace' => 'Modules
     //Permission
     Route::post('/permission/create', 'PermissionController@store')->middleware(['jwt.auth']);
     Route::get('/permission', 'PermissionController@index')->middleware(['jwt.auth']);
+    Route::get('/permission/show','PermissionController@show');
 
     Route::post('/login', 'AuthenticationController@login');
     Route::get('/get_auth_user', 'AuthenticationController@getAuthenticatedUser')->middleware('jwt.auth');
