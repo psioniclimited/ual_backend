@@ -4,17 +4,13 @@ namespace Modules\Sampling\Entities;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Position extends Model
+class ArtworkImage extends Model
 {
-    protected $fillable = ['name'];
+    protected $fillable = ['filepath'];
 
     public function artwork()
     {
         return $this->belongsTo('Modules\Sampling\Entities\Artwork');
     }
 
-    public function combos()
-    {
-        return $this->hasMany('Modules\Sampling\Entities\Combo');
-    }
 }

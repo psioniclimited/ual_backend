@@ -2,15 +2,13 @@
 
 namespace Modules\Sampling\Http\Controllers;
 
-use Modules\Sampling\Entities\Artwork;
-use Modules\Sampling\Entities\Position;
-use Modules\Sampling\Http\Requests\CreateArtworkRequest;
-
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Routing\Controller;
+use Modules\Sampling\Entities\Artwork;
 
-class ArtworkController extends Controller
+class ArtworkImageController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -33,23 +31,19 @@ class ArtworkController extends Controller
     /**
      * Store a newly created resource in storage.
      * @param  Request $request
+     * @param Artwork $artwork
      * @return Response
      */
-    public function store(Request $request)
+    public function store($artwork, Request $request)
     {
-        $artwork = Artwork::create($request->except(['artworkDetails']));
-        $artwork_details = $request->only('artworkDetails');
-        foreach ($artwork_details['artworkDetails'] as $artwork_detail) {
-//            if (!isN($artwork_detail['position'])) {
-            $position = $artwork->positions()->create(['name' => $artwork_detail['position']]);
-            $artwork_detail['a'] === '' ? $position->combos()->create(['name' => $artwork_detail['a']]) : '';
-            $artwork_detail['b'] === '' ? $position->combos()->create(['name' => $artwork_detail['b']]) : '';
-            $artwork_detail['c'] === '' ? $position->combos()->create(['name' => $artwork_detail['c']]) : '';
-            $artwork_detail['d'] === '' ? $position->combos()->create(['name' => $artwork_detail['d']]) : '';
-            $artwork_detail['e'] === '' ? $position->combos()->create(['name' => $artwork_detail['e']]) : '';
-//            }
+        $artwork = Artwork::find($artwork);
+        $images = $request->file('artwork_images');
+        foreach ($images as $key=>$image) {
+            $filename = Carbon::now() . '_' . $key . '_' . $image->getClientOriginalName();
+            $destination_path = storage_path('/images');
+            $image->move($destination_path, $filename);
+            $artwork->artwork_images()->create(['filepath' => $filename]);
         }
-        return response()->json($artwork->id);
     }
 
     /**
