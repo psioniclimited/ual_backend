@@ -52,7 +52,7 @@ class ArtworkImageController extends Controller
      */
     public function show()
     {
-        return view('sampling::show');
+        dd("working on it");
     }
 
     /**

@@ -9,16 +9,29 @@ use Modules\Sampling\Http\Requests\CreateArtworkRequest;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Routing\Controller;
+use Illuminate\Support\Facades\DB;
 
 class ArtworkController extends Controller
 {
+    private $position;
+
     /**
      * Display a listing of the resource.
      * @return Response
      */
     public function index()
     {
-        return view('sampling::index');
+
+        $artwork = DB::table('artworks')
+            ->join('positions', 'artworks.id', '=', 'positions.artwork_id')
+            ->leftJoin('combos', 'positions.id', '=', 'combos.position_id')
+            ->leftJoin('artwork_images', 'artworks.id', '=', 'artwork_images.artwork_id')
+            ->select('artworks.*', 'artwork_images.filepath',
+                'positions.name', 'combos.name as combo_name',
+                'combos.color as combo_color')
+            ->paginate(10);
+        dd($artwork);
+        return response()->json(Artwork::paginate(10));
     }
 
     /**
@@ -40,14 +53,12 @@ class ArtworkController extends Controller
         $artwork = Artwork::create($request->except(['artworkDetails']));
         $artwork_details = $request->only('artworkDetails');
         foreach ($artwork_details['artworkDetails'] as $artwork_detail) {
-//            if (!isN($artwork_detail['position'])) {
-            $position = $artwork->positions()->create(['name' => $artwork_detail['position']]);
-            $artwork_detail['a'] === '' ? $position->combos()->create(['name' => $artwork_detail['a']]) : '';
-            $artwork_detail['b'] === '' ? $position->combos()->create(['name' => $artwork_detail['b']]) : '';
-            $artwork_detail['c'] === '' ? $position->combos()->create(['name' => $artwork_detail['c']]) : '';
-            $artwork_detail['d'] === '' ? $position->combos()->create(['name' => $artwork_detail['d']]) : '';
-            $artwork_detail['e'] === '' ? $position->combos()->create(['name' => $artwork_detail['e']]) : '';
-//            }
+            foreach ($artwork_detail as $key => $value) {
+                if ($key === 'position')
+                    $this->position = $artwork->positions()->create(['name' => $value]);
+                else
+                    !is_null($value) ? $this->position->combos()->create(['name' => $key, 'color' => $value]) : '';
+            }
         }
         return response()->json($artwork->id);
     }
