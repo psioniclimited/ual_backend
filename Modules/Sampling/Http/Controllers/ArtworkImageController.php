@@ -1,14 +1,14 @@
 <?php
 
-namespace Modules\User\Http\Controllers;
+namespace Modules\Sampling\Http\Controllers;
 
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Routing\Controller;
-use Modules\User\Entities\Permission;
-use Modules\User\Http\Requests\PermissionRequest;
+use Modules\Sampling\Entities\Artwork;
 
-class PermissionController extends Controller
+class ArtworkImageController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -16,7 +16,7 @@ class PermissionController extends Controller
      */
     public function index()
     {
-        return response()->json(Permission::paginate(10));
+        return view('sampling::index');
     }
 
     /**
@@ -25,29 +25,34 @@ class PermissionController extends Controller
      */
     public function create()
     {
-        return view('user::create');
+        return view('sampling::create');
     }
 
     /**
      * Store a newly created resource in storage.
      * @param  Request $request
+     * @param Artwork $artwork
      * @return Response
      */
-    public function store(PermissionRequest $request)
+    public function store($artwork, Request $request)
     {
-        Permission::create($request->all());
-        return response('success');
+        $artwork = Artwork::find($artwork);
+        $images = $request->file('artwork_images');
+        foreach ($images as $key=>$image) {
+            $filename = Carbon::now() . '_' . $key . '_' . $image->getClientOriginalName();
+            $destination_path = storage_path('/images');
+            $image->move($destination_path, $filename);
+            $artwork->artwork_images()->create(['filepath' => $filename]);
+        }
     }
 
     /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * Show the specified resource.
+     * @return Response
      */
-    public function show(Permission $permission)
+    public function show()
     {
-        return response()->json($permission);
+        dd("working on it");
     }
 
     /**
@@ -56,7 +61,7 @@ class PermissionController extends Controller
      */
     public function edit()
     {
-        return view('user::edit');
+        return view('sampling::edit');
     }
 
     /**

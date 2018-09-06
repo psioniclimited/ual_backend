@@ -1,14 +1,12 @@
 <?php
 
-namespace Modules\User\Http\Controllers;
+namespace Modules\Sampling\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Routing\Controller;
-use Modules\User\Entities\Permission;
-use Modules\User\Http\Requests\PermissionRequest;
 
-class PermissionController extends Controller
+class SamplingController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -16,7 +14,7 @@ class PermissionController extends Controller
      */
     public function index()
     {
-        return response()->json(Permission::paginate(10));
+        return view('sampling::index');
     }
 
     /**
@@ -25,7 +23,7 @@ class PermissionController extends Controller
      */
     public function create()
     {
-        return view('user::create');
+        return view('sampling::create');
     }
 
     /**
@@ -33,21 +31,17 @@ class PermissionController extends Controller
      * @param  Request $request
      * @return Response
      */
-    public function store(PermissionRequest $request)
+    public function store(Request $request)
     {
-        Permission::create($request->all());
-        return response('success');
     }
 
     /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * Show the specified resource.
+     * @return Response
      */
-    public function show(Permission $permission)
+    public function show()
     {
-        return response()->json($permission);
+        return view('sampling::show');
     }
 
     /**
@@ -56,7 +50,7 @@ class PermissionController extends Controller
      */
     public function edit()
     {
-        return view('user::edit');
+        return view('sampling::edit');
     }
 
     /**
