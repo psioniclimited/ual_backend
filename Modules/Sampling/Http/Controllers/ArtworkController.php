@@ -3,6 +3,7 @@
 namespace Modules\Sampling\Http\Controllers;
 
 use Modules\Sampling\Entities\Artwork;
+use Modules\Sampling\Entities\Combo;
 use Modules\Sampling\Entities\Position;
 use Modules\Sampling\Http\Requests\CreateArtworkRequest;
 
@@ -22,14 +23,10 @@ class ArtworkController extends Controller
     public function index()
     {
 
-        $artwork = DB::table('artworks')
-            ->join('positions', 'artworks.id', '=', 'positions.artwork_id')
-            ->leftJoin('combos', 'positions.id', '=', 'combos.position_id')
-            ->leftJoin('artwork_images', 'artworks.id', '=', 'artwork_images.artwork_id')
-            ->select('artworks.*', 'artwork_images.filepath',
-                'positions.name', 'combos.name as combo_name',
-                'combos.color as combo_color')
-            ->paginate(10);
+        $artwork = Combo::with('position.artwork')
+            ->leftJoin('positions','positions.id','=', 'position_id')
+            ->leftJoin('artworks','artworks.id','=','positions.artwork_id')
+            ->get();
         dd($artwork);
         return response()->json(Artwork::paginate(10));
     }
