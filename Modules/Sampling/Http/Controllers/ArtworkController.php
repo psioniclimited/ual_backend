@@ -23,9 +23,7 @@ class ArtworkController extends Controller
     public function index()
     {
 
-        $artwork = Combo::with('position.artwork')
-            ->leftJoin('positions','positions.id','=', 'position_id')
-            ->leftJoin('artworks','artworks.id','=','positions.artwork_id')
+        $artwork = Combo::with('position.artwork.artwork_images')
             ->get();
         dd($artwork);
         return response()->json(Artwork::paginate(10));
