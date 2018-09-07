@@ -26,13 +26,6 @@ class ArtworkController extends Controller
 
         $artwork = Combo::with('position.artwork.artwork_images')
             ->paginate(10);
-
-//        $artwork = DB::table('combos')
-//            ->join('positions','combos.position_id','=','positions.id')
-//            ->join('artworks','positions.artwork_id','=','artworks.id')
-//            ->paginate($request->per_page);
-
-//        dd($artwork);
         return response()->json($artwork);
     }
 
