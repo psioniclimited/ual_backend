@@ -11,6 +11,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\DB;
+use App\Filters\ArtworkFilter;
 
 class ArtworkController extends Controller
 {
@@ -20,13 +21,19 @@ class ArtworkController extends Controller
      * Display a listing of the resource.
      * @return Response
      */
-    public function index()
+    public function index(Request $request, ArtworkFilter $filter)
     {
 
         $artwork = Combo::with('position.artwork.artwork_images')
-            ->get();
-        dd($artwork);
-        return response()->json(Artwork::paginate(10));
+            ->paginate(10);
+
+//        $artwork = DB::table('combos')
+//            ->join('positions','combos.position_id','=','positions.id')
+//            ->join('artworks','positions.artwork_id','=','artworks.id')
+//            ->paginate($request->per_page);
+
+//        dd($artwork);
+        return response()->json($artwork);
     }
 
     /**

@@ -19,6 +19,7 @@ class User extends Authenticatable
      */
     public function scopeFilter($query, UserFilter $filters)
     {
+
         return $filters->apply($query);
     }
 }
