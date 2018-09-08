@@ -62,9 +62,12 @@ class ArtworkController extends Controller
      * Show the specified resource.
      * @return Response
      */
-    public function show()
+    public function show($id)
     {
-        return view('sampling::show');
+        $artwork = Artwork::with('positions.combos')->where('id', '=', $id)->first();
+//        dd($artwork);
+        return response()->json($artwork);
+
     }
 
     /**
