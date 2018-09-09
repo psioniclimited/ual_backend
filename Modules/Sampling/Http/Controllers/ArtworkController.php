@@ -84,8 +84,9 @@ class ArtworkController extends Controller
      * @param  Request $request
      * @return Response
      */
-    public function update(Request $request)
+    public function update(Request $request , $id)
     {
+        dd($request->all());
     }
 
     /**
