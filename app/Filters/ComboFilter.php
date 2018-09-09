@@ -2,7 +2,7 @@
 
 namespace App\Filters;
 
-class ArtworkFilter extends Filters
+class ComboFilter extends Filters
 {
     /**
      * Registered filters to operate upon.
@@ -33,6 +33,11 @@ class ArtworkFilter extends Filters
     protected function global($global)
     {
         return $this->builder
-            ->where('client_name', 'like', '%' . $global . '%');
+            ->whereHas('position.artwork', function ($query) use ($global){
+                $query->where('client_name', 'like', '%' . $global . '%');
+            })
+            ->orWhereHas('position.artwork', function ($query) use ($global){
+                $query->where('reference_number', 'like', '%' . $global . '%');
+            });
     }
 }

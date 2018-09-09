@@ -2,8 +2,8 @@
 
 namespace Modules\Sampling\Entities;
 
+use App\Filters\ComboFilter;
 use Illuminate\Database\Eloquent\Model;
-use App\Filters\ArtworkFilter;
 
 class Combo extends Model
 {
@@ -15,11 +15,8 @@ class Combo extends Model
         return $this->belongsTo('Modules\Sampling\Entities\Position');
     }
 
-    public function scopeFilter(ArtworkFilter $filters)
+    public function scopeFilter($query, ComboFilter $filters)
     {
-        $query = DB::table('combos')
-            ->join('positions','combos.position_id','=','positions.id')
-            ->join('artworks','positions.artwork_id','=','artworks.id');
         return $filters->apply($query);
     }
 

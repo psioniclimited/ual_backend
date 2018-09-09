@@ -7,6 +7,8 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Routing\Controller;
 use Modules\Sampling\Entities\Artwork;
+use File;
+use Modules\Sampling\Entities\ArtworkImage;
 
 class ArtworkImageController extends Controller
 {
@@ -50,9 +52,21 @@ class ArtworkImageController extends Controller
      * Show the specified resource.
      * @return Response
      */
-    public function show()
+    public function show($id)
     {
-        dd("working on it");
+        $path = storage_path('images/' . (ArtworkImage::find($id))->filepath);
+
+        if (!File::exists($path)) {
+            abort(404);
+        }
+
+        $file = File::get($path);
+        $type = File::mimeType($path);
+
+        $response = Response::make($file, 200);
+        $response->header("Content-Type", $type);
+
+        return $response;
     }
 
     /**
