@@ -38,6 +38,9 @@ class ComboFilter extends Filters
             })
             ->orWhereHas('position.artwork', function ($query) use ($global){
                 $query->where('reference_number', 'like', '%' . $global . '%');
+            })
+            ->orWhereHas('position.artwork', function ($query) use ($global){
+                $query->where('description','like','%'.$global.'%');
             });
     }
 }
