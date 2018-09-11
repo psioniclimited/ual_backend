@@ -46,14 +46,13 @@ class ArtworkController extends Controller
      */
     public function store(Request $request)
     {
-        $artwork = Artwork::create($request->except(['artworkDetails']));
-        $artwork_details = $request->only('artworkDetails');
-        foreach ($artwork_details['artworkDetails'] as $artwork_detail) {
-            foreach ($artwork_detail as $key => $value) {
-                if ($key === 'position')
-                    $this->position = $artwork->positions()->create(['name' => $value]);
-                else
-                    !is_null($value) ? $this->position->combos()->create(['name' => $key, 'color' => $value]) : '';
+        $artwork = Artwork::create($request->except(['positions']));
+        foreach ($request->positions as $position) {
+            $newPosition = $artwork->positions()->create([
+                'name' => $position['name']
+            ]);
+            foreach ($position['combos'] as $combo){
+                !is_null($combo['name']) ? $newPosition->combos()->create($combo) : '';
             }
         }
         return response()->json($artwork->id);
@@ -66,7 +65,6 @@ class ArtworkController extends Controller
     public function show($id)
     {
         $artwork = Artwork::with('positions.combos')->where('id', '=', $id)->first();
-//        dd($artwork);
         return response()->json($artwork);
 
     }
