@@ -12,5 +12,4 @@ class ArtworkImage extends Model
     {
         return $this->belongsTo('Modules\Sampling\Entities\Artwork');
     }
-
 }

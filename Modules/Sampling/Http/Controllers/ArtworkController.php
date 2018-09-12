@@ -3,35 +3,25 @@
 namespace Modules\Sampling\Http\Controllers;
 
 use Modules\Sampling\Entities\Artwork;
-use Modules\Sampling\Entities\Position;
-use Modules\Sampling\Http\Requests\CreateArtworkRequest;
-
+use Modules\Sampling\Entities\Combo;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Routing\Controller;
-use Illuminate\Support\Facades\DB;
+use App\Filters\ComboFilter;
 
 class ArtworkController extends Controller
 {
-    private $position;
 
     /**
      * Display a listing of the resource.
      * @return Response
      */
-    public function index()
+    public function index(ComboFilter $filter)
     {
-
-        $artwork = DB::table('artworks')
-            ->join('positions', 'artworks.id', '=', 'positions.artwork_id')
-            ->leftJoin('combos', 'positions.id', '=', 'combos.position_id')
-            ->leftJoin('artwork_images', 'artworks.id', '=', 'artwork_images.artwork_id')
-            ->select('artworks.*', 'artwork_images.filepath',
-                'positions.name', 'combos.name as combo_name',
-                'combos.color as combo_color')
+        $artwork = Combo::with('position.artwork.artwork_images')
+            ->filter($filter)
             ->paginate(10);
-        dd($artwork);
-        return response()->json(Artwork::paginate(10));
+        return response()->json($artwork);
     }
 
     /**
@@ -50,14 +40,13 @@ class ArtworkController extends Controller
      */
     public function store(Request $request)
     {
-        $artwork = Artwork::create($request->except(['artworkDetails']));
-        $artwork_details = $request->only('artworkDetails');
-        foreach ($artwork_details['artworkDetails'] as $artwork_detail) {
-            foreach ($artwork_detail as $key => $value) {
-                if ($key === 'position')
-                    $this->position = $artwork->positions()->create(['name' => $value]);
-                else
-                    !is_null($value) ? $this->position->combos()->create(['name' => $key, 'color' => $value]) : '';
+        $artwork = Artwork::create($request->except(['positions']));
+        foreach ($request->positions as $position) {
+            $newPosition = $artwork->positions()->create([
+                'name' => $position['name']
+            ]);
+            foreach ($position['combos'] as $combo) {
+                !is_null($combo['color']) ? $newPosition->combos()->create($combo) : '';
             }
         }
         return response()->json($artwork->id);
@@ -67,9 +56,10 @@ class ArtworkController extends Controller
      * Show the specified resource.
      * @return Response
      */
-    public function show()
+    public function show($id)
     {
-        return view('sampling::show');
+        $artwork = Artwork::with('positions.combos')->where('id', '=', $id)->first();
+        return response()->json($artwork);
     }
 
     /**
@@ -86,8 +76,27 @@ class ArtworkController extends Controller
      * @param  Request $request
      * @return Response
      */
-    public function update(Request $request)
+    public function update(Request $request, $id)
     {
+
+        $artwork = Artwork::find($id);
+        $artwork->update(['reference_number' => $request->reference_number,
+            'client_name' => $request->client_name,
+            'division' => $request->division,
+            'date' => $request->date,
+            'description' => $request->description,
+            'note' => $request->note]);
+        $artwork->combos()->delete();
+        $artwork->positions()->delete();
+
+        foreach ($request->positions as $position) {
+            $newPosition = $artwork->positions()->create([
+                'name' => $position['name']
+            ]);
+            foreach ($position['combos'] as $combo) {
+                !is_null($combo['color']) ? $newPosition->combos()->create($combo) : '';
+            }
+        }
     }
 
     /**
